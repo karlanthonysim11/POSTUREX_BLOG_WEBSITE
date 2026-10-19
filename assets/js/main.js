@@ -9,7 +9,11 @@
     // Verified project contact email. Leave empty to hide the email row;
     // the contact form then explains that no address is published yet.
     contactEmail: '',
-    youtubeId: 'M0ScVmR_Qwo'
+    youtubeId: 'M0ScVmR_Qwo',
+    // Visitor star ratings (table created by supabase/website_feedback.sql).
+    // The anon key is a public, browser-safe key; access is limited by RLS.
+    supabaseUrl: 'https://qqkszombcykxszqjqhsm.supabase.co',
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxa3N6b21iY3lreHN6cWpxaHNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MzI2NjEsImV4cCI6MjA5NDAwODY2MX0.ZD-7kIgN6A4F_kkB9Dx6LEeNrw3TIJuavaW0FeEz--A'
   };
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -573,6 +577,140 @@
     });
   }
 
+  /* ---------------- Visitor feedback (Supabase) ---------------- */
+  function initFeedback() {
+    var section = $('#feedback');
+    if (!section || !CONFIG.supabaseUrl || !CONFIG.supabaseAnonKey) return;
+
+    var SENT_KEY = 'posturex-feedback-sent';
+    var LABELS = ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'];
+    var form = $('#feedback-form');
+    var status = $('#fb-status');
+    var submit = $('#fb-submit');
+    var hint = $('#fb-hint');
+    var labels = $$('.star-row label', form);
+    var radios = $$('.star-row input', form);
+    var comment = $('#fb-comment');
+
+    var api = function (path, opts) {
+      opts = opts || {};
+      var headers = {
+        apikey: CONFIG.supabaseAnonKey,
+        Authorization: 'Bearer ' + CONFIG.supabaseAnonKey,
+        'Content-Type': 'application/json'
+      };
+      if (opts.prefer) headers.Prefer = opts.prefer;
+      return fetch(CONFIG.supabaseUrl + '/rest/v1/' + path, {
+        method: opts.method || 'GET',
+        headers: headers,
+        body: opts.body ? JSON.stringify(opts.body) : undefined
+      }).then(function (res) {
+        if (!res.ok) throw new Error('Request failed: ' + res.status);
+        return res.status === 204 || res.status === 201 ? null : res.json();
+      });
+    };
+
+    var starsMarkup = function (rating) {
+      return '<span class="stars" style="--pct:' + (rating / 5) * 100 + '%" role="img" aria-label="' + rating + ' out of 5 stars">' +
+        '<span class="stars-fill" aria-hidden="true">★★★★★</span><span aria-hidden="true">★★★★★</span></span>';
+    };
+
+    var renderSummary = function (s) {
+      var count = +s.count || 0;
+      var avg = count ? +s.average : 0;
+      $('#fb-average').textContent = count ? avg.toFixed(1) : '–';
+      var stars = $('#fb-average-stars');
+      stars.style.setProperty('--pct', (avg / 5) * 100 + '%');
+      stars.setAttribute('aria-label', count ? 'Average ' + avg.toFixed(1) + ' out of 5 stars' : 'No ratings yet');
+      $('#fb-count').textContent = count ? 'Based on ' + count + ' rating' + (count === 1 ? '' : 's') : 'No ratings yet — be the first!';
+      $('#fb-bars').innerHTML = [5, 4, 3, 2, 1].map(function (n) {
+        var c = +s['d' + n] || 0;
+        return '<li><span>' + n + ' ★</span><span class="track"><span class="fill" style="--w:' + (count ? (c / count) * 100 : 0) + '%"></span></span><span>' + c + '</span></li>';
+      }).join('');
+    };
+
+    var renderReviews = function (rows) {
+      var wrap = $('#fb-reviews-wrap');
+      wrap.hidden = !rows.length;
+      $('#fb-reviews').innerHTML = rows.map(function (r) {
+        var date = new Date(r.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        return '<article class="review-card">' + starsMarkup(r.rating) +
+          '<p>' + escapeHtml(r.comment) + '</p>' +
+          '<div class="review-meta"><strong>' + escapeHtml(r.name || 'Anonymous') + '</strong><time datetime="' + escapeHtml(r.created_at) + '">' + date + '</time></div></article>';
+      }).join('');
+    };
+
+    var load = function () {
+      return Promise.all([
+        api('rpc/website_feedback_summary', { method: 'POST', body: {} }),
+        api('website_feedback?select=name,rating,comment,created_at&comment=not.is.null&order=created_at.desc&limit=6')
+      ]).then(function (res) {
+        renderSummary(res[0] || {});
+        renderReviews(res[1] || []);
+      });
+    };
+
+    // Reveal the section (and its links) only once the backend answers,
+    // so visitors never see a broken form.
+    load().then(function () {
+      section.hidden = false;
+      $$('[data-feedback-link]').forEach(function (el) { el.hidden = false; });
+    }).catch(function () { /* table not set up or offline: keep hidden */ });
+
+    // Star picker
+    var selected = 0;
+    var paint = function (n) {
+      labels.forEach(function (l, i) { l.classList.toggle('on', i < n); });
+      hint.textContent = n ? LABELS[n] : 'Select 1 to 5 stars';
+    };
+    labels.forEach(function (l, i) {
+      l.addEventListener('mouseenter', function () { paint(i + 1); });
+      l.addEventListener('mouseleave', function () { paint(selected); });
+    });
+    radios.forEach(function (r) {
+      r.addEventListener('change', function () { selected = +r.value; paint(selected); });
+    });
+
+    comment.addEventListener('input', function () { $('#fb-chars').textContent = comment.value.length; });
+
+    var lock = function (message) {
+      $$('input, textarea, button', form).forEach(function (el) { el.disabled = true; });
+      status.className = 'form-status success';
+      status.textContent = message;
+    };
+    try {
+      if (localStorage.getItem(SENT_KEY)) lock('Thank you! You have already rated POSTUREX from this browser.');
+    } catch (e) {}
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!selected) {
+        status.className = 'form-status error';
+        status.textContent = 'Please choose a star rating first.';
+        radios[0].focus();
+        return;
+      }
+      var name = $('#fb-name').value.trim().slice(0, 60);
+      var text = comment.value.trim().slice(0, 500);
+      submit.disabled = true;
+      status.className = 'form-status';
+      status.textContent = 'Sending…';
+      api('website_feedback', {
+        method: 'POST',
+        prefer: 'return=minimal',
+        body: { rating: selected, name: name || null, comment: text || null }
+      }).then(function () {
+        try { localStorage.setItem(SENT_KEY, '1'); } catch (err) {}
+        lock('Thank you for rating POSTUREX!');
+        return load();
+      }).catch(function () {
+        submit.disabled = false;
+        status.className = 'form-status error';
+        status.textContent = 'Sorry, your rating could not be sent. Please try again in a moment.';
+      });
+    });
+  }
+
   /* ---------------- Boot ---------------- */
   document.addEventListener('DOMContentLoaded', function () {
     initTheme();
@@ -585,6 +723,7 @@
     initVideo();
     initLightbox();
     initContact();
+    initFeedback();
     icons();
     initReveal();
     var y = $('#year'); if (y) y.textContent = new Date().getFullYear();

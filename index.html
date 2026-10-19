@@ -83,6 +83,7 @@
         <li><a href="#avp">AVP Showcase</a></li>
         <li><a href="#team">Developers</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li data-feedback-link hidden><a href="#feedback">Rate POSTUREX</a></li>
       </ul>
     </div>
   </header>
@@ -586,8 +587,8 @@
             <p>Developed the POSTUREX mobile app and backend, and built the chair-sleeve hardware, ESP32 firmware and Edge Impulse posture model.</p>
           </article>
           <article class="team-card adviser reveal">
-            <div class="avatar" aria-hidden="true">AP</div>
-            <h3>Aileen Polinio</h3>
+            <img class="avatar avatar-photo" src="assets/img/team/aileen-polinio.webp" width="480" height="480" alt="Portrait of Aileen S. Polinio" loading="lazy" />
+            <h3>Aileen S. Polinio</h3>
             <p class="role">Capstone Adviser</p>
             <p>Guided the project through its development iterations, defenses and evaluation.</p>
           </article>
@@ -635,6 +636,56 @@
         </form>
       </div>
     </section>
+
+    <!-- ============ FEEDBACK ============ -->
+    <section class="section alt" id="feedback" aria-labelledby="feedback-title" hidden>
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="kicker">Feedback</p>
+          <h2 id="feedback-title">Rate POSTUREX</h2>
+          <p class="section-sub">Watched the AVP or explored the project? Tell us what you think. Your rating appears below for other visitors to see.</p>
+        </div>
+
+        <div class="feedback-grid">
+          <div class="rating-summary reveal" aria-live="polite">
+            <p class="rs-average"><span id="fb-average">–</span><small>/5</small></p>
+            <span class="stars stars-lg" id="fb-average-stars" style="--pct:0%" role="img" aria-label="No ratings yet"><span class="stars-fill" aria-hidden="true">★★★★★</span><span aria-hidden="true">★★★★★</span></span>
+            <p class="rs-count" id="fb-count">No ratings yet</p>
+            <ol class="rs-bars" id="fb-bars" aria-label="Rating distribution"></ol>
+          </div>
+
+          <form class="feedback-form reveal" id="feedback-form" novalidate>
+            <fieldset class="star-input">
+              <legend>Your rating <span class="req">(required)</span></legend>
+              <div class="star-row">
+                <input type="radio" name="rating" id="fb-r1" value="1" /><label for="fb-r1" title="1 star"><span class="sr-only">1 star</span><span aria-hidden="true">★</span></label>
+                <input type="radio" name="rating" id="fb-r2" value="2" /><label for="fb-r2" title="2 stars"><span class="sr-only">2 stars</span><span aria-hidden="true">★</span></label>
+                <input type="radio" name="rating" id="fb-r3" value="3" /><label for="fb-r3" title="3 stars"><span class="sr-only">3 stars</span><span aria-hidden="true">★</span></label>
+                <input type="radio" name="rating" id="fb-r4" value="4" /><label for="fb-r4" title="4 stars"><span class="sr-only">4 stars</span><span aria-hidden="true">★</span></label>
+                <input type="radio" name="rating" id="fb-r5" value="5" /><label for="fb-r5" title="5 stars"><span class="sr-only">5 stars</span><span aria-hidden="true">★</span></label>
+              </div>
+              <p class="star-hint" id="fb-hint">Select 1 to 5 stars</p>
+            </fieldset>
+            <div class="field">
+              <label for="fb-name">Name <span class="opt">(optional)</span></label>
+              <input id="fb-name" name="name" type="text" maxlength="60" autocomplete="name" placeholder="Shown as “Anonymous” if left blank" />
+            </div>
+            <div class="field">
+              <label for="fb-comment">Comment <span class="opt">(optional)</span></label>
+              <textarea id="fb-comment" name="comment" rows="4" maxlength="500"></textarea>
+              <small class="char-count"><span id="fb-chars">0</span>/500</small>
+            </div>
+            <button class="btn btn-primary" type="submit" id="fb-submit">Submit rating <i data-lucide="star"></i></button>
+            <p class="form-status" id="fb-status" role="status"></p>
+          </form>
+        </div>
+
+        <div class="reviews" id="fb-reviews-wrap" hidden>
+          <h3>What visitors are saying</h3>
+          <div class="review-grid" id="fb-reviews"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- ============ FOOTER ============ -->
@@ -647,7 +698,7 @@
       </div>
       <nav class="footer-links" aria-label="Footer">
         <a href="#about">About</a><a href="#how">How It Works</a><a href="#research">Research</a>
-        <a href="#blog">Blog</a><a href="#avp">AVP</a><a href="#contact">Contact</a>
+        <a href="#blog">Blog</a><a href="#avp">AVP</a><a href="#contact">Contact</a><a href="#feedback" data-feedback-link hidden>Rate Us</a>
       </nav>
     </div>
     <div class="container disclaimer">
