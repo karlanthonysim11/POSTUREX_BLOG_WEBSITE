@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>POSTUREX Blog</title>
+  <meta name="description" content="Inside POSTUREX — the research and development journey of an IoT-based sitting-posture monitoring prototype." />
+  <meta name="theme-color" content="#0a1324" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="POSTUREX" />
+  <meta property="og:title" content="Inside POSTUREX — Our Innovation Journey" />
+  <meta property="og:description" content="The research and development journey of POSTUREX." />
+  <meta property="og:image" content="assets/img/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('posturex-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="nav scrolled" id="nav">
+    <div class="nav-inner container">
+      <a href="index.html" class="brand" aria-label="POSTUREX home">
+        <img src="assets/img/logo.png" alt="" width="34" height="34" />
+        <span>POSTUREX</span>
+      </a>
+      <nav aria-label="Primary" style="margin-left:auto">
+        <ul class="nav-links">
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#how">How It Works</a></li>
+          <li><a href="index.html#research">Research</a></li>
+          <li><a href="index.html#blog" class="active" aria-current="true">Blog</a></li>
+          <li><a href="index.html#avp">AVP</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+          <i data-lucide="sun" class="icon-sun"></i>
+          <i data-lucide="moon" class="icon-moon"></i>
+        </button>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobile-menu" hidden>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#about">About POSTUREX</a></li>
+        <li><a href="index.html#how">How It Works</a></li>
+        <li><a href="index.html#research">Research &amp; Results</a></li>
+        <li><a href="index.html#blog">Blog &amp; Updates</a></li>
+        <li><a href="index.html#avp">AVP Showcase</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main" class="article-page">
+    <article class="article-wrap" id="article-root">
+      <noscript><p>Please enable JavaScript to read this article, or return to the <a href="index.html#blog">blog</a>.</p></noscript>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container disclaimer">
+      <i data-lucide="shield-alert"></i>
+      <p>POSTUREX is a research prototype intended for posture monitoring and awareness. It is not a medical diagnostic or treatment system.</p>
+    </div>
+    <div class="container copyright">© <span id="year">2026</span> Leah Mae C. Pabro &amp; Karl Anthony B. Sim · Assumption College of Davao</div>
+  </footer>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/js/articles.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
